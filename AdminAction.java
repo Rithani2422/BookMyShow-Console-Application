@@ -7,7 +7,8 @@ import java.time.LocalTime;
 
 public class AdminAction {
 
-    public static Admin adminLogin(Scanner scanner) {
+    public static Admin adminLogin() {
+        Scanner scanner = new Scanner(System.in);
         // Prompt the admin to enter their username
         System.out.print("Enter Admin Username: ");
         String username = scanner.nextLine(); // Read the entered username
@@ -26,7 +27,7 @@ public class AdminAction {
                     return admin; // Return the authenticated admin object
                 } else {
                     System.out.println("Login failed! Invalid password.");
-                    return null; // Return null if the password is incorrect
+                    return new Admin(null,null); // Return null if the password is incorrect
                 }
             }
         }
@@ -36,7 +37,8 @@ public class AdminAction {
         return null; // Return null if the username is not found
     }
 
-    public static void adminMenu(Admin admin, Scanner scanner) {
+    public static void adminMenu(Admin admin) {
+        Scanner scanner = new Scanner(System.in);
         // Check if the admin is logged in
         if (admin == null) {
             System.out.println("Unauthorized access! Please log in first.");
@@ -64,19 +66,19 @@ public class AdminAction {
             // Perform actions based on the selected menu option
             switch (choice) {
                 case "1":
-                    addMovie(scanner); // Call method to add a movie
+                    addMovie(); // Call method to add a movie
                     break;
                 case "2":
                     viewAllMovies(); // Call method to view all movies
                     break;
                 case "3":
-                    addTheatre(scanner); // Call method to add a theatre
+                    addTheatre(); // Call method to add a theatre
                     break;
                 case "4":
                     viewAllTheatres(); // Call method to view all theatres
                     break;
                 case "5":
-                    viewSpecificTheatre(scanner); // Call method to view a specific theatre
+                    viewSpecificTheatre(); // Call method to view a specific theatre
                     break;
                 case "6":
                     // Logout action
@@ -88,7 +90,8 @@ public class AdminAction {
         }
     }
 
-    public static void addTheatre(Scanner scanner) {
+    public static void addTheatre() {
+        Scanner scanner = new Scanner(System.in);
         // Prompt the admin to enter details for a new theatre
         System.out.println("\nAdding a new theatre...");
         System.out.print("Enter Theatre Name: ");
@@ -110,6 +113,7 @@ public class AdminAction {
         // Prompt for the number of screens in the theatre
         System.out.print("Enter Number of Screens: ");
         int numberOfScreens = Integer.parseInt(scanner.nextLine()); // Convert input to integer
+
 
         // Loop through the number of screens and get details for each one
         for (int i = 1; i <= numberOfScreens; i++) {
@@ -136,7 +140,7 @@ public class AdminAction {
             Screen newScreen = new Screen(screenName, numberOfSeats, seatsGrid);
 
             // Add the screen to the theatre
-            newTheatre.addScreen(screenName, newScreen);
+            AdminAction.addScreen(screenName, newScreen);
         }
 
         // Add the newly created theatre to the system's theatre directory
@@ -146,7 +150,20 @@ public class AdminAction {
         System.out.println("Theatre added successfully!");
     }
 
-    public static void addMovie(Scanner scanner) {
+    // Method to add a new screen to the theatre
+    public static void addScreen(String screenName, Screen screen) {
+        HashMap<String, Screen> screens = new HashMap<>();
+        // Check if a screen with the same name already exists
+        if (screens.containsKey(screenName)) {
+            System.out.println("Screen with this name already exists: " + screenName);
+        } else {
+            screens.put(screenName, screen); // Add the screen to the map
+            System.out.println("Screen added successfully: " + screenName);
+        }
+    }
+
+    public static void addMovie() {
+        Scanner scanner = new Scanner(System.in);
         System.out.println("\nAdding a new movie...");
 
         // Get the movie name from the admin
@@ -174,21 +191,23 @@ public class AdminAction {
             if (theatre.getLocation().equalsIgnoreCase(movieLocation)) {
                 theatresInLocation.add(theatre);
             }
+            else{
+                System.out.println("No theatres available in this location. Add a theatre first.");
+                return;
+            }
         }
-
-        // If no theatres are found in the given location, prompt the admin to add a theatre first
-        if (theatresInLocation.isEmpty()) {
-            System.out.println("No theatres available in this location. Add a theatre first.");
-            return;
-        }
-
         // Allow the admin to select a theatre from the available options
-        Theatre selectedTheatre = selectTheatre(scanner, theatresInLocation);
+        Theatre selectedTheatre = selectTheatre(theatresInLocation);
         if (selectedTheatre == null) return; // Exit if no theatre is selected
 
         // Allow the admin to select a screen within the chosen theatre
-        Screen selectedScreen = selectScreen(scanner, selectedTheatre);
+        Screen selectedScreen = selectScreen(selectedTheatre);
         if (selectedScreen == null) return; // Exit if no screen is selected
+
+        // Check for conflicting shows in the selected screen
+        if (hasTimeConflict(selectedScreen, movieDate)) {
+            return; // Exit if there is a time conflict
+        }
 
         // Get show start time from the admin and parse it using a predefined time format
         System.out.print("Enter Show Start Time (HH:mm): ");
@@ -220,21 +239,46 @@ public class AdminAction {
 
         // Add the newly created show to the selected screen
         selectedScreen.addShow(newShow);
-
-        // Create a new movie object and associate it with the selected theatre, screen, and show
-        Movies movie = new Movies(movieName, movieLocation, movieDate, selectedTheatre, selectedScreen, newShow);
-
-        // Store the movie in the system's movie directory, grouping multiple shows under the same movie name
-        BMS.getMovieDirectory()
-                .computeIfAbsent(movieName, ignored -> new ArrayList<>())
-                .add(movie);
-
         // Confirm successful addition of the movie and its show
         System.out.println("Movie and show added successfully!");
     }
 
+    private static boolean hasTimeConflict(Screen selectedScreen, LocalDate movieDate) {
+        Scanner scanner = new Scanner(System.in);
+        // Get the list of shows for the selected screen
+        List<Show> existingShows = selectedScreen.getShows(); // Change ArrayList to List
+
+        // If there are no existing shows, there's no conflict
+        if (existingShows.isEmpty()) {
+            return false;
+        }
+
+        System.out.print("Enter Show Start Time (HH:mm): ");
+        LocalTime startTime = LocalTime.parse(scanner.nextLine(), Utilities.getTimeFormatter());
+
+        // Get the duration of the movie
+        System.out.print("Enter Duration (in minutes): ");
+        long duration = Long.parseLong(scanner.nextLine());
+
+        // Calculate the end time
+        LocalTime endTime = startTime.plusMinutes(duration + 30);
+
+        // Check if the new showtime conflicts with any existing show
+        for (Show existingShow : existingShows) {
+            // If the new show starts before an existing show ends and ends after an existing show starts
+            if (startTime.isBefore(existingShow.getEndTime()) && endTime.isAfter(existingShow.getStartTime())) {
+                System.out.println("Error: The selected time conflicts with an existing show.");
+                return true; // Return true if there's a time conflict
+            }
+        }
+
+        return false; // Return false if no conflict is found
+    }
+
+
     // Method to select a theatre from a list of theatres in a location
-    private static Theatre selectTheatre(Scanner scanner, List<Theatre> theatresInLocation) {
+    private static Theatre selectTheatre(List<Theatre> theatresInLocation) {
+        Scanner scanner = new Scanner(System.in);
         // Display available theatres in the given location
         System.out.println("Available Theatres:");
         for (Theatre theatre : theatresInLocation) {
@@ -258,7 +302,8 @@ public class AdminAction {
     }
 
     // Method to select a screen from a given theatre
-    private static Screen selectScreen(Scanner scanner, Theatre selectedTheatre) {
+    private static Screen selectScreen(Theatre selectedTheatre) {
+        Scanner scanner = new Scanner(System.in);
         // Display available screens in the selected theatre
         System.out.println("Available Screens:");
         // Loop through each screen's name in the theatre's list of screens
@@ -413,7 +458,8 @@ public class AdminAction {
     }
 
     // Method to view a specific theatre
-    public static void viewSpecificTheatre(Scanner scanner) {
+    public static void viewSpecificTheatre() {
+        Scanner scanner = new Scanner(System.in);
         // Prompt the user to enter a theatre name to view
         System.out.print("Enter Theatre Name to view: ");
         String theatreName = scanner.nextLine();

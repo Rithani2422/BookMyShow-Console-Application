@@ -6,19 +6,19 @@ import java.util.HashMap;
 
 public class Utilities {
 
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm"); // Formatter for time (HH:mm)
-    private static final LocalDate TODAY = LocalDate.now(); // Current date
+    private static final DateTimeFormatter timeFormatter= DateTimeFormatter.ofPattern("HH:mm"); // Formatter for time (HH:mm)
+    private static final LocalDate today = LocalDate.now(); // Current date
 
     // Getters for formatters and current date
 
     // Returns the time formatter
     public static DateTimeFormatter getTimeFormatter() {
-        return TIME_FORMATTER;
+        return timeFormatter;
     }
 
     // Returns today's date
     public static LocalDate getToday() {
-        return TODAY;
+        return today;
     }
 
     // Returns a date formatter (yyyy-MM-dd)

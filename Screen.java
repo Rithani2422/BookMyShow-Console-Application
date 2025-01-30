@@ -15,7 +15,20 @@ public class Screen {
         this.name = name;  // Assign the screen name
         this.numberOfSeats = numberOfSeats;  // Assign the number of seats in the screen
         this.shows = new ArrayList<>();  // Initialize the shows list (empty initially)
-        this.seatGrid = seatGrid;  // Initialize the seat grid with the provided data
+        this.seatGrid = initializeSeatGrid();  // Initialize the seat grid with the provided data
+    }
+    // Helper method to initialize a unique seat arrangement for each screen
+    private HashMap<Character, ArrayList<String>> initializeSeatGrid() {
+        HashMap<Character, ArrayList<String>> seatGrid = new HashMap<>();
+        // Customize your seat grid based on the screen's specific configuration
+        for (char row = 'A'; row <= 'J'; row++) { // 10 rows
+            ArrayList<String> seats = new ArrayList<>();
+            for (int i = 1; i <= 15; i++) { // 15 seats per row
+                seats.add(row + String.valueOf(i)); // Example: A1, A2, ..., J15
+            }
+            seatGrid.put(row, seats);
+        }
+        return seatGrid;
     }
 
     // Getter for the screen's name

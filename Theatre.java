@@ -27,16 +27,6 @@ public class Theatre {
         return screens;
     }
 
-    // Method to add a new screen to the theatre
-    public void addScreen(String screenName, Screen screen) {
-        // Check if a screen with the same name already exists
-        if (screens.containsKey(screenName)) {
-            System.out.println("Screen with this name already exists: " + screenName);
-        } else {
-            screens.put(screenName, screen); // Add the screen to the map
-            System.out.println("Screen added successfully: " + screenName);
-        }
-    }
 
     // Override the toString method to display the theatre details
     @Override

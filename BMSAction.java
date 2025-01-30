@@ -29,10 +29,10 @@ public class BMSAction {
             switch (choice) {
                 case 1:
                     // Admin login
-                    Admin loggedInAdmin = AdminAction.adminLogin(scanner);
+                    Admin loggedInAdmin = AdminAction.adminLogin();
                     if (loggedInAdmin != null) {
                         // If admin login is successful, display the admin menu
-                        AdminAction.adminMenu(loggedInAdmin, scanner);
+                        AdminAction.adminMenu(loggedInAdmin);
                     } else {
                         // If login fails, show an error message
                         System.out.println("Invalid credentials. Please try again.");
@@ -45,7 +45,7 @@ public class BMSAction {
                     if (loggedInUser != null) {
                         // If user login is successful, show a welcome message and display the user menu
                         System.out.println("Login successful! Welcome, " + loggedInUser.getUsername() + "!");
-                        UserAction.userMenu(loggedInUser, scanner);
+                        UserAction.userMenu(loggedInUser);
                     } else {
                         // If login fails or user is not registered, prompt user to register
                         System.out.println("Invalid credentials or user not registered. Please register first.");
