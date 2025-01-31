@@ -120,6 +120,12 @@ public class AdminAction {
             System.out.print("Enter Screen " + i + " Name: ");
             String screenName = scanner.nextLine(); // Read screen name
 
+            // Ensure screen doesn't already exist in the theatre
+        if (newTheatre.getScreens().containsKey(screenName)) {
+            System.out.println("Screen with the name \"" + screenName + "\" already exists in this theatre.");
+            return; // Exit the loop if the screen already exists
+        }
+
             System.out.print("Enter Number of Seats: ");
             int numberOfSeats = Integer.parseInt(scanner.nextLine()); // Read number of seats
 
