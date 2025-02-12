@@ -6,69 +6,73 @@ import java.util.HashMap;
 
 public class Utilities {
 
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
-    private static final LocalDate TODAY = LocalDate.now();
+    private static final DateTimeFormatter timeFormatter= DateTimeFormatter.ofPattern("HH:mm"); // Formatter for time (HH:mm)
+    private static final LocalDate today = LocalDate.now(); // Current date
 
     // Getters for formatters and current date
+
+    // Returns the time formatter
     public static DateTimeFormatter getTimeFormatter() {
-        return TIME_FORMATTER;
+        return timeFormatter;
     }
 
+    // Returns today's date
     public static LocalDate getToday() {
-        return TODAY;
+        return today;
     }
 
+    // Returns a date formatter (yyyy-MM-dd)
     public static DateTimeFormatter getDateFormatter() {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd");
     }
 
-
-    public static HashMap<Character, ArrayList<String>> generateGrid(long numberofseats, String grid) { // Method to generate the seat pattern
-        var starremoved = grid.split("\\*"); // Separate the '*' (space between groups)
+    public static HashMap<Character, ArrayList<String>> generateGrid(long numberofseats, String grid) {
+        // Split the grid pattern by '*' to separate the seat groups
+        var starremoved = grid.split("\\*");
         long sum = 0;
 
-        // Get the sum of the group sizes in the grid
+        // Calculate the total size of the groups in the grid
         for (String a : starremoved) {
             long temp = Long.parseLong(a);
-            sum += temp;
+            sum += temp; // Add the group size to the total sum
         }
 
         // Check if the number of seats is divisible by the total group size
         if (numberofseats % sum == 0) {
-            var hashmap = new HashMap<Character, ArrayList<String>>(); // Map to store row and seats
-            char chara = 'A'; // Row label starts from 'A'
+            var hashmap = new HashMap<Character, ArrayList<String>>(); // Create a map to store row labels and seat configurations
+            char chara = 'A'; // Row labels start from 'A'
 
             while (numberofseats > 0) {
-                ArrayList<String> row = new ArrayList<>(); // List to store seats of the current row
+                ArrayList<String> row = new ArrayList<>(); // List to store seats for the current row
 
                 // For each group in the pattern
                 for (int i = 0; i < starremoved.length; i++) {
-                    long groupSize = Long.parseLong(starremoved[i]);
+                    long groupSize = Long.parseLong(starremoved[i]); // Get the group size
 
                     // Add the seats to the row for the current group
                     for (int j = 0; j < groupSize; j++) {
-                        row.add("_"); // Placeholder for seat (could be replaced with actual labels like A1, A2, etc.)
+                        row.add("_"); // Add a placeholder for the seat (can later be replaced with actual seat labels)
                     }
 
                     // Add space between groups if not the last group
                     if (i < starremoved.length - 1) {
-                        row.add("<SPACE>"); // Space between groups
+                        row.add("<SPACE>"); // Add space to separate groups
                     }
                 }
 
-                // Add the row to the hashmap with the current row label
+                // Add the row to the hashmap with the current row label (e.g., A, B, C...)
                 hashmap.put(chara, row);
-                chara++; // Move to the next row
+                chara++; // Increment the row label to the next letter
 
                 // Decrease the number of seats remaining
-                numberofseats -= sum; // Reduce the total seats by the sum of group sizes
+                numberofseats -= sum; // Reduce the number of seats by the total size of groups
             }
 
-            // Return the final seat grid map
+            // Return the generated seat grid
             return hashmap;
         }
 
-        // If the number of seats isn't valid, return null and print error
+        // If the number of seats isn't valid, print an error and return null
         System.out.println("Enter the correct number of seats.");
         return null;
     }

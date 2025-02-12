@@ -12,34 +12,30 @@ public class Show {
     private double price; // Price of the ticket
     private LocalDate showDate; // Date of the show
     private String movieName; // Name of the movie
-    private Screen screen; // Associated screen for the show
+    private Screen screen; // Screen associated with the show
     private HashMap<Character, ArrayList<String>> seatArrangement; // Seat arrangement map
 
-    // Constructor with validations
+    // Constructor with validation checks for parameters
     public Show(LocalTime startTime, LocalTime endTime, LocalDate showDate, String movieName, Screen screen, double price, HashMap<Character, ArrayList<String>> seatArrangement) {
-        this.startTime = startTime != null ? startTime : LocalTime.of(0, 0);
-        this.endTime = endTime != null ? endTime : LocalTime.of(0, 0);
-        this.showDate = showDate != null ? showDate : LocalDate.now();
-        this.movieName = movieName != null && !movieName.isEmpty() ? movieName : "Untitled";
-        this.screen = screen != null ? screen : new Screen("Default Screen", 50,seatArrangement);// Default screen if null
-        this.price = price > 0 ? price : 100; // Default price
-        this.seatArrangement = seatArrangement != null ? seatArrangement : initializeDefaultSeats();
+        // Set start time; default to 00:00 if null
+        this.startTime = startTime;
+        // Set end time; default to 00:00 if null
+        this.endTime = endTime;
+        // Set show date; default to the current date if null
+        this.showDate = showDate;
+        // Set movie name; default to "Untitled" if null or empty
+        this.movieName = movieName;
+        // Set screen; default to a "Default Screen" if null
+        this.screen = screen;// Default screen if null
+        // Set price; default to 100 if price is not positive
+        this.price = price;
+        // Set seat arrangement; use default if null
+        this.seatArrangement = screen.getSeatGrid();
     }
 
-    // Helper method to initialize a default seat arrangement
-    private HashMap<Character, ArrayList<String>> initializeDefaultSeats() {
-        HashMap<Character, ArrayList<String>> defaultSeatArrangement = new HashMap<>();
-        for (char row = 'A'; row <= 'D'; row++) { // Rows A to D
-            ArrayList<String> seats = new ArrayList<>();
-            for (int i = 1; i <= 10; i++) { // 10 seats per row
-                seats.add(row + String.valueOf(i));
-            }
-            defaultSeatArrangement.put(row, seats);
-        }
-        return defaultSeatArrangement;
-    }
 
-    // Get detailed show information
+
+    // Method to get detailed show information
     public String getShowDetails() {
         return "Show Details:" +
                 "\nMovie Name: " + movieName +
@@ -47,51 +43,50 @@ public class Show {
                 "\nStart Time: " + startTime +
                 "\nEnd Time: " + endTime +
                 "\nPrice: $" + price +
-                "\nScreen: " + (screen != null ? screen.getName() : "No Screen Assigned") +
-                "\nSeats Available: " + seatArrangement;
+                "\nScreen: " + (screen != null ? screen.getName() : "No Screen Assigned") +  // Screen name or default message
+                "\nSeats Available: " + seatArrangement; // Print seat arrangement
     }
 
-    public HashMap<Character, ArrayList<String>> getSeatArrangement() {
-        return seatArrangement;
-    }
 
-    public void setSeatArrangement(HashMap<Character, ArrayList<String>> seatArrangement) {
-        this.seatArrangement = seatArrangement;
-    }
 
+    // Getter for price
     public double getPrice() {
         return price;
     }
 
+    // Getter for movie name
     public String getMovieName() {
         return movieName;
     }
 
+    // Getter for end time
     public LocalTime getEndTime() {
         return endTime;
     }
 
+    // Getter for start time
     public LocalTime getStartTime() {
         return startTime;
     }
 
+    // Getter for the associated screen
     public Screen getScreen() {
         return screen;
     }
 
+    // Getter for show date
     public LocalDate getShowDate() {
         return showDate;
     }
 
-
-
-    public void  setEndTime(LocalTime endTime) {
+    // Setter for end time with validation
+    public void setEndTime(LocalTime endTime) {
         if (endTime != null) {
             this.endTime = endTime;
         }
     }
 
-
+    // Overriding equals() to compare Show objects based on start time, end time, and date
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -106,15 +101,19 @@ public class Show {
                 && Objects.equals(showDate, show.showDate);
     }
 
+    // Overriding hashCode() to generate hash based on start time, end time, and date for comparisons
     @Override
     public int hashCode() {
         return Objects.hash(startTime, endTime, showDate);
     }
 
+    // Overriding toString() to provide a string representation of a Show object
     @Override
     public String toString() {
         return "Show [Movie Name=" + movieName + ", Start Time=" + startTime + ", End Time=" + endTime + ", Date=" + showDate + "]";
     }
 }
+
+
 
 

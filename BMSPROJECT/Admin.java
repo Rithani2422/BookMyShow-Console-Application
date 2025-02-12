@@ -1,25 +1,22 @@
-package BMSPROJECT;
+package BMSPROJECT;  // Declares the package name
 
-public class Admin {
-    private String UserName;
-    private String Password;
+public class Admin {  // Defines a public class named 'Admin'
+    private String userName;  // Private variable to store the admin's username
+    private String password;  // Private variable to store the admin's password
 
-    public Admin(String username,String password){
-        this.UserName=username;
-        this.Password=password;
-
+    // Constructor to initialize the Admin object with a username and password
+    public Admin(String username, String password) {
+        this.userName = username;  // Assigns the provided username to the instance variable
+        this.password = password;  // Assigns the provided password to the instance variable
     }
+
+    // Getter method to retrieve the username
     public String getUsername() {
-        return UserName;
+        return userName;
     }
 
+    // Getter method to retrieve the password
     public String getPassword() {
-        return Password;
+        return password;
     }
-
-    public void setPassword(String password) {
-        this.Password = password;
-    }
-
-
 }
