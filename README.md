@@ -108,7 +108,8 @@ For any queries or feedback, contact to:
 
 - **Developer**: Rithani L R 
 - **Email**: rithanirajkumar2@gmail.com
-- **LinkedIn**: https://www.linkedin.com/in/rithani-rajkumar-a53356282/
+- **LinkedIn**: www.linkedin.com/in/rithani-l-r-a53356282
+- 
 
 
 
